@@ -95,11 +95,20 @@ final class HTTPStatusTests: XCTestCase {
     }
 
     func testMethodIdempotency() {
+        // The full RFC 9110 §9.2.2 idempotent set.
         XCTAssertTrue(HTTPMethod.get.isIdempotent)
+        XCTAssertTrue(HTTPMethod.head.isIdempotent)
         XCTAssertTrue(HTTPMethod.put.isIdempotent)
         XCTAssertTrue(HTTPMethod.delete.isIdempotent)
+        XCTAssertTrue(HTTPMethod.options.isIdempotent)
+        XCTAssertTrue(HTTPMethod.trace.isIdempotent)
+
         XCTAssertFalse(HTTPMethod.post.isIdempotent)
         XCTAssertFalse(HTTPMethod.patch.isIdempotent)
+
+        // An unrecognised verb is treated as unsafe to repeat.
+        XCTAssertFalse(HTTPMethod("PROPFIND").isIdempotent)
+
         XCTAssertEqual(HTTPMethod("get"), .get)
     }
 }
