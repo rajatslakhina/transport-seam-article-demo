@@ -264,9 +264,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		TS0000000000000000000012 /* XCLocalSwiftPackageReference "" */ = {
+		TS0000000000000000000012 /* XCLocalSwiftPackageReference "." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "";
+			relativePath = ".";
 		};
 /* End XCLocalSwiftPackageReference section */
 
