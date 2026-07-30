@@ -18,7 +18,8 @@ This repo is the small, working version of that argument.
 | `Sources/TransportSeamURLSession` | The only file in the package that knows `URLSession` exists. ~70 lines, including error translation. |
 | `Sources/TransportSeamUI` | A SwiftUI screen that swaps the transport under a live feature and shows every physical attempt. |
 | `Tests/TransportSeamTests` | 35 tests, including the ones that run the *same* feature assertions over two structurally different transports. |
-| `Demo.xcodeproj` | The iOS app target. Consumes the package from this same checkout. |
+| `Demo.xcodeproj` | The runnable iOS app. Consumes the package from this same checkout. Verified on Simulator — see below. |
+| `Demo/Screenshots` | Real captures from that Simulator run. |
 
 ## The whole idea, in one type
 
@@ -101,10 +102,17 @@ Being specific about what was and wasn't checked:
 
 - ✅ `swift build` and `swift test` pass. **35 tests, 0 failures**, Swift 6.2 toolchain, Swift 6 language mode (strict concurrency), `aarch64-unknown-linux-gnu`.
 - ✅ `TransportSeam` and `TransportSeamURLSession` compile cleanly.
-- ⚠️ `TransportSeamUI` and `Demo.xcodeproj` were **not** compiled or launched. The build environment for this run was headless Linux, where `import SwiftUI` cannot resolve, and the automation that would have driven Xcode could not be granted access during an unattended run. **The app has not been run on a Simulator, and there are no Simulator screenshots in this repo** — the images above are a diagram and a typeset rendering of the real `swift test` results, not screenshots of the app.
-- ✅ What the SwiftUI layer got instead: line-by-line review against the failure classes that have actually bitten this project before — no force-unwraps anywhere in `Sources/` (checked by script), `@MainActor` model with a `nonisolated init` so SwiftUI's nonisolated `@State` initialisation type-checks under Swift 6, all list rendering over `Identifiable` values, and a `project.pbxproj` that avoids the `.executableTarget`-as-app pattern (a synthesized bundle identifier that isn't committed to git, which crashes on launch) in favour of a committed `PRODUCT_BUNDLE_IDENTIFIER`. Brace and paren balance on `project.pbxproj`, the scheme XML, and every `.swift` file were verified by script.
+- ✅ **Built and run on a real iOS Simulator.** Xcode 26.3, iPhone 17 Pro, iOS 26.3. `Demo.xcodeproj` opened cleanly, resolved `TransportSeam` as a local package from `relativePath = "."`, compiled with no errors, and launched. Both screenshots below are real captures of that session, not mockups.
+- ✅ The demo's core behaviour was exercised live, not just launched: the *Healthy* transport returns all four services on the first attempt, and the *Flaky* transport records **three physical attempts — 500, 500, 200** — while the feature layer still hands back the same four services. That is the article's whole claim, visible on device.
 
-If it doesn't build first time in your Xcode, that's a genuine gap in the above and an issue is welcome.
+![Screenshot of the demo app on iPhone 17 Pro, Healthy transport selected, showing four services — Edge Gateway operational at 41 ms, Sync Engine degraded at 734 ms, Push Delivery operational at 88 ms, Media Pipeline in outage.](Demo/Screenshots/01-healthy-transport.png)
+
+![Screenshot of the demo app with the Flaky transport selected: the same four services resolve successfully, and the Physical attempts log below shows attempt #1 returning 500, #2 returning 500, and #3 returning 200.](Demo/Screenshots/02-flaky-transport-retry-ladder.png)
+
+- ✅ The SwiftUI layer also got a line-by-line review against the failure classes that have bitten this project before: no force-unwraps anywhere in `Sources/` (checked by script), a `@MainActor` model with a `nonisolated init` so SwiftUI's nonisolated `@State` initialisation type-checks under Swift 6, all list rendering over `Identifiable` values, and a `project.pbxproj` that avoids the `.executableTarget`-as-app pattern (a synthesized bundle identifier that isn't committed to git, which crashes on launch) in favour of a committed `PRODUCT_BUNDLE_IDENTIFIER`.
+- ⚠️ One honest limit remains: the package's **unit tests** run on Linux, so `TransportSeamUI` is never type-checked by `swift test` — its verification is the Simulator run above plus review, not CI.
+
+If it doesn't build first time in your Xcode, that's a genuine gap and an issue is welcome.
 
 ## Requirements
 
