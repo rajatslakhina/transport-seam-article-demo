@@ -112,6 +112,6 @@ Swift 6.0+ toolchain, iOS 17+ for the demo app.
 
 ---
 
-Article: *(added after publish)*
+Article: [URLRequest Is Not a Domain Type — and Swift's New Networking Stack Is About to Prove It](https://medium.com/@er.rajatlakhina/urlrequest-is-not-a-domain-type-and-swifts-new-networking-stack-is-about-to-prove-it-9c01e5a6beeb)
 
 Written as the companion repo to a piece on what the Swift Networking Workgroup's unified stack actually asks of iOS teams today.
