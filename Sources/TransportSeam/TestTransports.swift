@@ -3,8 +3,8 @@ import Foundation
 /// A transport that replays a fixed script and records what it was asked to do.
 ///
 /// This is the payoff of a one-method protocol: the whole "network layer" in a
-/// test is forty lines with no URL loading system, no `URLProtocol` subclass and
-/// no port binding.
+/// test is a single actor, with no URL loading system, no `URLProtocol` subclass
+/// and no port binding.
 public actor ScriptedTransport: HTTPTransport {
     public enum Step: Sendable {
         case respond(HTTPResponse)
