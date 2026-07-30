@@ -24,13 +24,18 @@ public struct HTTPMethod: RawRepresentable, Hashable, Sendable, CustomStringConv
     public static let put = HTTPMethod("PUT")
     public static let patch = HTTPMethod("PATCH")
     public static let delete = HTTPMethod("DELETE")
+    public static let options = HTTPMethod("OPTIONS")
+    public static let trace = HTTPMethod("TRACE")
 
-    /// Whether re-sending this request is defined by RFC 9110 to have the same
-    /// effect as sending it once. The retry policy leans on this, because
-    /// retrying a non-idempotent request is how you get duplicate charges.
+    /// Whether re-sending this request has the same effect as sending it once.
+    ///
+    /// This is the full idempotent set from RFC 9110 §9.2.2. The retry policy
+    /// leans on it, because retrying a non-idempotent request is how you get
+    /// duplicate charges. Anything not listed here — including a custom verb
+    /// the library has never seen — is treated as unsafe to repeat.
     public var isIdempotent: Bool {
         switch self {
-        case .get, .head, .put, .delete: return true
+        case .get, .head, .put, .delete, .options, .trace: return true
         default: return false
         }
     }
