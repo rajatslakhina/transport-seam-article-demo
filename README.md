@@ -56,13 +56,25 @@ func testScriptedTransportSatisfiesTheContract() async throws {
 }
 
 func testLoopbackTransportSatisfiesTheSameContract() async throws {
+    let routes = [LoopbackTransport.Route(method: .get, path: "/v1/status"): StatusFixtures.okResponse]
     try await assertClientBehaviour(over: LoopbackTransport(routes: routes))
 }
 ```
 
 If that suite ever needs a per-transport branch, the seam has leaked and the migration has stopped being free.
 
-![Terminal output: swift test reports seven passing suites and a final line reading "Executed 35 tests, with 0 failures (0 unexpected) in 0.006 seconds".](Docs/terminal-tests.png)
+![Typeset summary of this repo's swift test results: seven passing suites listed by name, ending with "Executed 35 tests, with 0 failures (0 unexpected)".](Docs/terminal-tests.png)
+
+That image is a typeset rendering, not a screenshot. Here is the genuine tail of the run it summarises:
+
+```text
+Test Suite 'TransportSwapTests' passed at 2026-07-30 22:49:35.545
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'debug.xctest' passed at 2026-07-30 22:49:35.545
+	 Executed 35 tests, with 0 failures (0 unexpected) in 0.109 (0.109) seconds
+Test Suite 'All tests' passed at 2026-07-30 22:49:35.545
+	 Executed 35 tests, with 0 failures (0 unexpected) in 0.109 (0.109) seconds
+```
 
 ## Two details worth stealing
 
@@ -89,7 +101,7 @@ Being specific about what was and wasn't checked:
 
 - ✅ `swift build` and `swift test` pass. **35 tests, 0 failures**, Swift 6.2 toolchain, Swift 6 language mode (strict concurrency), `aarch64-unknown-linux-gnu`.
 - ✅ `TransportSeam` and `TransportSeamURLSession` compile cleanly.
-- ⚠️ `TransportSeamUI` and `Demo.xcodeproj` were **not** compiled or launched. The build environment for this run was headless Linux, where `import SwiftUI` cannot resolve, and the automation that would have driven Xcode could not be granted access during an unattended run. **The app has not been run on a Simulator, and there are no Simulator screenshots in this repo** — the images above are a diagram and a real terminal capture, not app screenshots.
+- ⚠️ `TransportSeamUI` and `Demo.xcodeproj` were **not** compiled or launched. The build environment for this run was headless Linux, where `import SwiftUI` cannot resolve, and the automation that would have driven Xcode could not be granted access during an unattended run. **The app has not been run on a Simulator, and there are no Simulator screenshots in this repo** — the images above are a diagram and a typeset rendering of the real `swift test` results, not screenshots of the app.
 - ✅ What the SwiftUI layer got instead: line-by-line review against the failure classes that have actually bitten this project before — no force-unwraps anywhere in `Sources/` (checked by script), `@MainActor` model with a `nonisolated init` so SwiftUI's nonisolated `@State` initialisation type-checks under Swift 6, all list rendering over `Identifiable` values, and a `project.pbxproj` that avoids the `.executableTarget`-as-app pattern (a synthesized bundle identifier that isn't committed to git, which crashes on launch) in favour of a committed `PRODUCT_BUNDLE_IDENTIFIER`. Brace and paren balance on `project.pbxproj`, the scheme XML, and every `.swift` file were verified by script.
 
 If it doesn't build first time in your Xcode, that's a genuine gap in the above and an issue is welcome.
@@ -100,6 +112,6 @@ Swift 6.0+ toolchain, iOS 17+ for the demo app.
 
 ---
 
-Article: *(added after publish — see below)*
+Article: *(added after publish)*
 
 Written as the companion repo to a piece on what the Swift Networking Workgroup's unified stack actually asks of iOS teams today.
