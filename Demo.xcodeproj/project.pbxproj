@@ -102,7 +102,7 @@
 			);
 			mainGroup = TS0000000000000000000009;
 			packageReferences = (
-				TS0000000000000000000012 /* XCLocalSwiftPackageReference "" */,
+				TS0000000000000000000012 /* XCLocalSwiftPackageReference "." */,
 			);
 			productRefGroup = TS000000000000000000000B /* Products */;
 			projectDirPath = "";
