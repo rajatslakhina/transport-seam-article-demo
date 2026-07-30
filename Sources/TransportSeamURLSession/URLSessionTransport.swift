@@ -45,6 +45,13 @@ public struct URLSessionTransport: HTTPTransport {
             throw TransportError.malformedResponse(reason: "response was not HTTP")
         }
 
+        // Honest limitation: `allHeaderFields` is an unordered dictionary, and
+        // URLSession has already joined repeated fields such as `Set-Cookie`.
+        // So on this path `HTTPFields` preserves neither wire order nor
+        // multiplicity — it can only report what URLSession chose to keep. A
+        // transport built on a stack that exposes raw fields (SwiftNIO, the
+        // Workgroup's client) can populate both faithfully, which is one
+        // concrete reason the currency types model them properly.
         var fields = HTTPFields()
         for (key, value) in http.allHeaderFields {
             guard let name = key as? String, let value = value as? String else { continue }
