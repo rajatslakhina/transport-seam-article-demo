@@ -4,7 +4,7 @@ A working demo of one idea: **put a seam between your feature code and whatever 
 
 Swift's new [Networking Workgroup](https://www.swift.org/networking-workgroup/) is building a unified stack — shared I/O primitives, common protocol implementations, and a modern HTTP client/server API on structured concurrency. None of it is something you adopt this sprint. But the cost of adopting it later is being decided right now, by how many of your files know the words `URLSession` and `URLRequest`.
 
-This repo is the small, runnable version of that argument.
+This repo is the small, working version of that argument.
 
 ![Diagram: feature modules speak HTTPRequest and HTTPResponse to a protocol called HTTPTransport; below the seam, three interchangeable implementations — URLSession, a future Workgroup HTTP client, and in-process test fixtures — each plug in with one adapter file.](Docs/diagram-seam.png)
 
@@ -18,7 +18,7 @@ This repo is the small, runnable version of that argument.
 | `Sources/TransportSeamURLSession` | The only file in the package that knows `URLSession` exists. ~70 lines, including error translation. |
 | `Sources/TransportSeamUI` | A SwiftUI screen that swaps the transport under a live feature and shows every physical attempt. |
 | `Tests/TransportSeamTests` | 35 tests, including the ones that run the *same* feature assertions over two structurally different transports. |
-| `Demo.xcodeproj` | The runnable iOS app. Consumes the package from this same checkout. |
+| `Demo.xcodeproj` | The iOS app target. Consumes the package from this same checkout. |
 
 ## The whole idea, in one type
 
